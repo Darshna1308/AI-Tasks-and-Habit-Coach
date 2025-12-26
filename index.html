@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Task & Habit Coach</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #512da8, #1a237e 30%, #ff6f00 70%, #ffcc80);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .glass-card {
+      width: 100%;
+      max-width: 960px;
+      background: rgba(18, 18, 26, 0.8);
+      border-radius: 28px;
+      padding: 24px 26px;
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+      color: #ffffff;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: 0.5px;
+    }
+
+    .title-block p {
+      margin: 4px 0 0 0;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .badge {
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      color: #222;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .sub-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1.25fr;
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .badge-row {
+        align-items: flex-start;
+      }
+    }
+
+    .panel {
+      background: linear-gradient(145deg, rgba(33, 33, 51, 0.95), rgba(21, 21, 36, 0.95));
+      border-radius: 20px;
+      padding: 16px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .panel-title h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .chip {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    label {
+      font-size: 12px;
+      display: block;
+      margin-bottom: 4px;
+      opacity: 0.9;
+    }
+
+    textarea,
+    input,
+    select {
+      width: 100%;
+      border-radius: 10px;
+      border: none;
+      padding: 8px 10px;
+      font-size: 13px;
+      margin-bottom: 10px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .inputs-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .inputs-row > div {
+      flex: 1;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 130px;
+      border-radius: 999px;
+      border: none;
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    .btn span.icon {
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #43e97b, #38f9d7);
+      color: #00332b;
+    }
+
+    .btn-warm {
+      background: linear-gradient(135deg, #ffb347, #ff6f61);
+      color: #3a1400;
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      opacity: 0.95;
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: wait;
+      box-shadow: none;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .output-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .tab.active {
+      background: rgba(0, 0, 0, 0.4);
+      opacity: 1;
+    }
+
+    .output-box {
+      background: radial-gradient(circle at top left, rgba(144, 202, 249, 0.12), rgba(0, 0, 0, 0.75));
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      min-height: 170px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .footer {
+      margin-top: 12px;
+      font-size: 11px;
+      text-align: center;
+      opacity: 0.9;
+    }
+
+    .footer span {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <div class="header">
+      <div class="title-block">
+        <h1>AI Task & Habit Coach</h1>
+        <p>Break big goals into tiny daily actions using real generative AI and prompt engineering.</p>
+      </div>
+      <div class="badge-row">
+        <div class="badge">2nd Year CSE Project</div>
+        <div class="sub-badge">Generative AI · Prompt Engineering · Habit Planning</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT: Inputs -->
+      <div class="panel">
+        <div class="panel-title">
+          <h2>1. Tell me your goals</h2>
+          <span class="chip">Input</span>
+        </div>
+
+        <label for="goals">Goals (1 per line)</label>
+        <textarea
+          id="goals"
+          placeholder="Examples:
+learn DSA
+exercise
+wake up early"
+        ></textarea>
+
+        <div class="inputs-row">
+          <div>
+            <label for="days">How many days?</label>
+            <input id="days" type="number" value="7" min="1" />
+          </div>
+          <div>
+            <label for="minutes">Minutes per day?</label>
+            <input id="minutes" type="number" value="30" min="5" />
+          </div>
+        </div>
+
+        <label for="tone">Coach tone</label>
+        <select id="tone">
+          <option value="friendly" selected>Friendly</option>
+          <option value="strict">Strict but kind</option>
+          <option value="funny">Funny / playful</option>
+        </select>
+
+        <div class="pill-row">
+          <div class="pill">• Plan, motivation & review via separate prompts</div>
+          <div class="pill">• Same goals, three different AI behaviors</div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn btn-primary" onclick="generate('plan')" id="btn-plan">
+            <span class="icon">📅</span> Generate Plan
+          </button>
+          <button class="btn btn-success" onclick="generate('motivation')" id="btn-motivation">
+            <span class="icon">⚡</span> Motivation
+          </button>
+          <button class="btn btn-warm" onclick="generate('review')" id="btn-review">
+            <span class="icon">📝</span> Weekly Review
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Output -->
+      <div class="panel">
+        <div class="panel-title">
+          <h2>2. AI Coach Output</h2>
+          <span class="chip">Generated</span>
+        </div>
+
+        <div class="output-tabs">
+          <button class="tab active" id="tab-plan" onclick="switchTab('plan')">Plan</button>
+          <button class="tab" id="tab-motivation" onclick="switchTab('motivation')">Motivation</button>
+          <button class="tab" id="tab-review" onclick="switchTab('review')">Review</button>
+        </div>
+
+        <div id="output-plan" class="output-box">
+          Your daily plan will appear here. Add your goals on the left and click “Generate Plan”.
+        </div>
+        <div id="output-motivation" class="output-box" style="display: none;">
+          Motivation lines will appear here.
+        </div>
+        <div id="output-review" class="output-box" style="display: none;">
+          Weekly review questions will appear here.
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>Backend: Node.js + Hugging Face (OpenAI‑compatible router) · Frontend: HTML/CSS/JS</span>
+    </div>
+  </div>
+
+  <script>
+    let activeTab = "plan";
+
+    function switchTab(tab) {
+      activeTab = tab;
+      const tabs = ["plan", "motivation", "review"];
+
+      tabs.forEach((t) => {
+        const tabBtn = document.getElementById("tab-" + t);
+        const box = document.getElementById("output-" + t);
+        if (t === tab) {
+          tabBtn.classList.add("active");
+          box.style.display = "block";
+        } else {
+          tabBtn.classList.remove("active");
+          box.style.display = "none";
+        }
+      });
+    }
+
+    async function generate(type) {
+      const goalsText = document.getElementById("goals").value.trim();
+      const days = parseInt(document.getElementById("days").value || "7", 10);
+      const minutes = parseInt(document.getElementById("minutes").value || "30", 10);
+      const tone = document.getElementById("tone").value;
+
+      const btnPlan = document.getElementById("btn-plan");
+      const btnMotivation = document.getElementById("btn-motivation");
+      const btnReview = document.getElementById("btn-review");
+
+      if (!goalsText) {
+        alert("Please enter at least one goal.");
+        return;
+      }
+
+      const goals = goalsText
+        .split("\n")
+        .map((g) => g.trim())
+        .filter((g) => g.length > 0);
+
+      const outputId =
+        type === "plan"
+          ? "output-plan"
+          : type === "motivation"
+          ? "output-motivation"
+          : "output-review";
+
+      const outputBox = document.getElementById(outputId);
+      outputBox.textContent = "Thinking with AI...";
+
+      btnPlan.disabled = true;
+      btnMotivation.disabled = true;
+      btnReview.disabled = true;
+
+      try {
+        const res = await fetch("/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: type,
+            goals: goals,
+            days: days,
+            minutesPerDay: minutes,
+            tone: tone,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          outputBox.textContent = "Error: " + data.error;
+        } else {
+          outputBox.textContent = data.result;
+        }
+      } catch (err) {
+        outputBox.textContent =
+          "Network or server error. Check if server is running.";
+      } finally {
+        btnPlan.disabled = false;
+        btnMotivation.disabled = false;
+        btnReview.disabled = false;
+      }
+
+      switchTab(type);
+    }
+  </script>
+</body>
+</html>
